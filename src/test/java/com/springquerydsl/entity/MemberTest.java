@@ -1,5 +1,6 @@
 package com.springquerydsl.entity;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
@@ -44,5 +47,20 @@ class MemberTest {
             System.out.println("member=" + member);
             System.out.println("-> member.team=" + member.getTeam());
         }
+    }
+
+    @Test
+    public void startQuerydsl() {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(em);
+
+        QMember qMember = new QMember("m");
+
+        Member member1 = queryFactory.
+                select(qMember).
+                from(qMember).
+                where(qMember.username.eq("member1"))
+                .fetchOne();
+
+        assertEquals("member1", member1.getUsername());
     }
 }
